@@ -1,0 +1,38 @@
+---
+- name: recording reset
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+#task 1: to check how many videos are there in mongo
+    - name: check how many recording are there in mongo
+      shell: |
+        mongo mongodb://root:example@localhost:27017/orca-ai --authenticationDatabase admin --eval "db['recorded_scenes'].find({}, {alerts_count: 1, _id: 0})" | grep alerts_count | cut -d':' -f2 | cut -d'}' -f1
+      register: how_much_videos_are_in_mongo
+    - debug:
+        var: how_much_videos_are_in_mongo.stdout_lines
+        
+#task 2: check how many files in upload directory
+    - name: check how many recording are there in upload directory
+      shell: |
+       ls -A /orcaai/orcaai-storage/upload/scenes | wc -l
+      register: how_much_scenes_in_upload_directory
+    - debug:
+        var: how_much_scenes_in_upload_directory.stdout_lines
+
+#task 3: delete how many videos are there
+    - name: Recordings reset 
+      shell: |
+       docker run -it -e CUDA_VERSION=$(nvidia-smi | grep 'CUDA Version:' | cut -d ':' -f3 |  sed -r 's/[|]+/ /g' | xargs) -e DISPLAY=$(w -hs | grep -Po "[ \t]:[\.0-9A-Za-z:]+[ \t]" | sort -u | xargs) -v ~/.docker/config.json:/root/.docker/config.json -v /var/run/docker.sock:/var/run/docker.sock -v /orcaai/orcaai-storage:/orcaai/orcaai-storage --network host --privileged registry.gitlab.com/orca_ai/orcaai-ship/ship-cli:v2.14.0 make reset-alarm-recordings-limit
+       
+      when: how_much_scenes_in_upload_directory.stdout | int >= 0
+      when: how_much_videos_are_in_mongo.stdout | int >= 60
+      
+#task 4: shows how many videos are there
+    - name: shows how many recording are there in mongo after the clean
+      shell: |
+        mongo mongodb://root:example@localhost:27017/orca-ai --authenticationDatabase admin --eval "db['recorded_scenes'].find({}, {alerts_count: 1, _id: 0})" | grep alerts_count | cut -d':' -f2 | cut -d'}' -f1
+      register: how_much_videos_after_clean
+    - debug:
+        var: how_much_videos_after_clean.stdout_lines 

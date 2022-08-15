@@ -1,0 +1,16 @@
+---
+- name: Check SOG status
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+      
+#task 1: to check the storage
+    - name: Check SOG status.
+      shell: |
+        curl -s http://localhost:5010/pvt | grep sog | cut -d':' -f11 | cut -d"," -f1
+      register: Sog_status
+      
+    - debug: msg="The sog of the ship is {{ Sog_status.stdout }}"
+#        var: Sog_status.stdout

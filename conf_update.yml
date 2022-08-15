@@ -1,0 +1,58 @@
+---
+- name: conf update v2.14
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+    - name: Wait for system to become reachable
+      wait_for_connection:
+      timeout: 60
+      
+      
+#task 1: Secure the configurations & upload directories
+    - name: Secure the configurations & upload directories
+      shell: |
+        sudo chmod 600 -R /orcaai/orcaai-storage/config/
+sudo chmod 600 -R /orcaai/orcaai-storage/upload/
+      
+        
+#task 2: Set the current system version
+    - name: Set the current system version
+      shell: |
+        export CURRENT_VERSION=v2.14.0
+
+         
+#task 3: Set the Consul hostname of the ship
+    - name: Set the Consul hostname of the ship
+      shell: |
+        SHIP=$(echo $(curl http://localhost:8500/v1/kv/shared/HOST_NAME | python -m json.tool | grep Value | awk '{print $2}' | tr -d '",') | base64 -d | tr -d '"')
+      register: Consul_hostname
+    - debug:
+        var: Consul_hostname.stdout_lines
+
+
+#task 4: Fetch config using the CLI
+    - name: Fetch config using the CLI
+      shell: |
+        sudo docker run -it -e CUDA_VERSION=$(nvidia-smi | grep 'CUDA Version:' | cut -d ':' -f3 |  sed -r 's/[|]+/ /g' | xargs) -e DISPLAY=$(w -hs | grep -Po "[ \t]:[\.0-9A-Za-z:]+[ \t]" | sort -u | xargs) -v ~/.docker/config.json:/root/.docker/config.json -v /var/run/docker.sock:/var/run/docker.sock -v /orcaai/orcaai-storage:/orcaai/orcaai-storage --network host --privileged registry.gitlab.com/orca_ai/orcaai-ship/ship-cli:$CURRENT_VERSION make set-cloud-configs ship=$SHIP version=2.14.0
+      register: config_download
+    - debug:
+        var: config_download.stdout_lines
+
+
+#task 5: Restart the system
+    - name: Restart the system
+      shell: |
+        sudo docker run -it -e CUDA_VERSION=$(nvidia-smi | grep 'CUDA Version:' | cut -d ':' -f3 |  sed -r 's/[|]+/ /g' | xargs) -e DISPLAY=$(w -hs | grep -Po "[ \t]:[\.0-9A-Za-z:]+[ \t]" | sort -u | xargs) -v ~/.docker/config.json:/root/.docker/config.json -v /var/run/docker.sock:/var/run/docker.sock -v /orcaai/orcaai-storage/:/orcaai/orcaai-storage/ --network host --privileged registry.gitlab.com/orca_ai/orcaai-ship/ship-cli:$CURRENT_VERSION make restart-all
+      register: Restart
+    - debug:
+        var: Restart.stdout_lines
+      wait: '20'
+            
+        
+#task 5: take screenshot
+    - name: take screenshot
+      shell: |
+        DISPLAY=":0.0" import -windows root ~/Pictures/screenshot.jpg
+

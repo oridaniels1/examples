@@ -1,0 +1,17 @@
+---
+- name: Tracepath check 
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+
+      
+      
+#task 1: Tracepath check
+    - name: Tracepath check
+      shell: |
+        tracepath 8.8.4.4 -m 6
+      register: Tracepath
+    - debug:
+        var: Tracepath.stdout_lines

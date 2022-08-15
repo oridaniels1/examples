@@ -1,0 +1,15 @@
+---
+- name: Check Turbo boost
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+      
+#task 1: to check the storage
+    - name: Check Turbo boost
+      shell: |
+        cat /sys/devices/system/cpu/intel_pstate/no_turbo
+      register: Turbo_status
+    - debug:
+        var: Turbo_status.stdout

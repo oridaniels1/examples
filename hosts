@@ -1,0 +1,115 @@
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+# Ex 1: Ungrouped hosts, specify before any group headers:
+
+## green.example.com
+## blue.example.com
+## 192.168.100.1
+## 192.168.100.10
+
+# Ex 2: A collection of hosts belonging to the 'webservers' group:
+
+## [webservers]
+## alpha.example.org
+## beta.example.org
+## 192.168.1.100
+## 192.168.1.110
+
+# If you have multiple hosts following a pattern, you can specify
+# them like this:
+
+## www[001:006].example.com
+
+# Ex 3: A collection of database servers in the 'dbservers' group:
+#
+
+## [dbservers]
+##
+## db01.intranet.mydomain.net
+## db02.intranet.mydomain.net
+## 10.25.1.56
+## 10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+## db-[99:101]-node.example.com
+
+[uat]
+lab-clay ansible_host=10.9.0.57 ansible_port=39 ansible_user=lab-clay ansible_password=Orca123 ansible_sudo_pass=Orca123
+danchor-6 ansible_host=10.9.0.92 ansible_port=39 ansible_user=lab-clay ansible_password=Orca123 ansible_sudo_pass=Orca123
+
+[ships]
+arc-integrity ansbile_host=10.9.0.146 ansible_port=39 ansible_user=orca-z110 ansible_password=Orca123 ansible_sudo_pass=Orca123
+arc-independece ansbile_host=10.9.0.156 ansible_port=39 ansible_user=orca-z118 ansible_password=Orca123 ansible_sudo_pass=Orca123
+antonis-i-angelicussis ansbile_host=10.9.0.86 ansible_port=39 ansible_user=antonis-i-angelicussis ansible_password=Orca123 ansible_sudo_pass=Orca123
+earth-summit-new ansbile_host=10.9.0.78 ansible_port=39 ansible_user=earth-summit-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+enesel-captain-lyristis ansbile_host=10.9.0.75 ansible_port=39 ansible_user=enesel-captain-lyristis ansible_password=Orca123 ansible_sudo_pass=Orca123
+enesel-maria-p-lemos ansbile_host=10.9.0.56 ansible_port=39 ansible_user=enesel-kanaris-21 ansible_password=Orca123 ansible_sudo_pass=Orca123
+enesel-pantelis-new ansbile_host=10.9.0.58 ansible_port=39 ansible_user=enesel-pantelis-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+flagship-violet ansbile_host=10.9.0.102 ansible_port=39 ansible_user=flagship-violet ansible_password=Orca123 ansible_sudo_pass=Orca123
+irini-n-lemos ansbile_host=10.9.0.49 ansible_port=39 ansible_user=irini-n-lemos ansible_password=Orca123 ansible_sudo_pass=Orca123
+kyrakatingo ansbile_host=10.9.0.72 ansible_port=39 ansible_user=kyrakatingo ansible_password=Orca123 ansible_sudo_pass=Orca123
+latsco-hellas-athina ansbile_host=10.9.0.70 ansible_port=39 ansible_user=latsco-hellas-athina ansible_password=Orca123 ansible_sudo_pass=Orca123
+latsco-hellas-diana ansbile_host=10.9.0.66 ansible_port=39 ansible_user=latsco-hellas-diana ansible_password=Orca123 ansible_sudo_pass=Orca123
+liberty-pride-new ansbile_host=10.9.0.59 ansible_port=39 ansible_user=liberty-pride-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+maersk-nordborg ansbile_host=10.9.0.99 ansible_port=39 ansible_user=maersk-nordborg ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-danae ansbile_host=10.9.0.89 ansible_port=39 ansible_user=maran-danae ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-dione ansbile_host=10.9.0.90 ansible_port=39 ansible_user=maran-dione ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-gas-hector ansbile_host=10.9.0.132 ansible_port=39 ansible_user=maran-gas-agamemnon ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-gas-lindos ansbile_host=10.9.0.131 ansible_port=39 ansible_user=maran-gas-lindos ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-ajax ansbile_host=10.9.0.128 ansible_port=39 ansible_user=maran-tanker-ajax ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-antiope ansbile_host=10.9.0.130 ansible_port=39 ansible_user=maran-tanker-antiope ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-ares-new ansbile_host=10.9.0.134 ansible_port=39 ansible_user=maran-tanker-ares-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-athena ansbile_host=10.9.0.142 ansible_port=39 ansible_user=maran-tanker-athena ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-arete ansbile_host=10.9.0.33 ansible_port=39 ansible_user=maran-tanker-arete ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-ariadne ansbile_host=10.9.0.35 ansible_port=39 ansible_user=maran-tanker-ariadne ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-artemis ansbile_host=10.9.0.105 ansible_port=39 ansible_user=maran-tanker-artemis ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-helios ansbile_host=10.9.0.136 ansible_port=39 ansible_user=maran-tanker-helios ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-sagitta ansbile_host=10.9.0.81 ansible_port=39 ansible_user=maran-tanker-sagitta ansible_password=Orca123 ansible_sudo_pass=Orca123
+maran-tanker-taurus ansbile_host=10.9.0.144 ansible_port=39 ansible_user=orca-z108 ansible_password=Orca123 ansible_sudo_pass=Orca123
+maria-a-angelicoussis ansbile_host=10.9.0.57 ansible_port=39 ansible_user=maria-a-angelicoussis ansible_password=Orca123 ansible_sudo_pass=Orca123
+methane-mickie-harper-new ansbile_host=10.9.0.51 ansible_port=39 ansible_user=methane-mickie-harper-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+mg-sakura-new ansbile_host=10.9.0.55 ansible_port=39 ansible_user=mg-sakura-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+msc-altair ansbile_host=10.9.0.63 ansible_port=39 ansible_user=msc-altair ansible_password=Orca123 ansible_sudo_pass=Orca123
+msc-caterina ansbile_host=10.9.0.74 ansible_port=39 ansible_user=msc-caterina ansible_password=Orca123 ansible_sudo_pass=Orca123
+msc-ellen ansbile_host=10.9.0.65 ansible_port=39 ansible_user=msc-ellen ansible_password=Orca123 ansible_sudo_pass=Orca123
+msc-nela ansbile_host=10.9.0.100 ansible_port=39 ansible_user=msc-nela ansible_password=Orca123 ansible_sudo_pass=Orca123
+msc-orion ansbile_host=10.9.0.62 ansible_port=39 ansible_user=msc-orion ansible_password=Orca123 ansible_sudo_pass=Orca123
+moonlight ansbile_host=10.9.0.136 ansible_port=39 ansible_user=moonlight ansible_password=Orca123 ansible_sudo_pass=Orca123
+neptune-galene ansbile_host=10.9.0.135 ansible_port=39 ansible_user=neptune-galene ansible_password=Orca123 ansible_sudo_pass=Orca123
+neptune-dynamis ansbile_host=10.9.0.111 ansible_port=39 ansible_user=neptune-dynamis ansible_password=Orca123 ansible_sudo_pass=Orca123
+nordic-ace ansbile_host=10.9.0.54 ansible_port=39 ansible_user=nordic-ace ansible_password=Orca123 ansible_sudo_pass=Orca123
+petredec-dancing-brave ansbile_host=10.9.0.108 ansible_port=39 ansible_user=petredec-dancing-brave ansible_password=Orca123 ansible_sudo_pass=Orca123
+seaspan-harmony ansbile_host=10.9.0.96 ansible_port=39 ansible_user=seaspan-harmony ansible_password=Orca123 ansible_sudo_pass=Orca123
+seaspan-witness ansbile_host=10.9.0.71 ansible_port=39 ansible_user=seaspan-witness ansible_password=Orca123 ansible_sudo_pass=Orca123
+shell-macoma ansbile_host=10.9.0.39 ansible_port=39 ansible_user=shell-macoma ansible_password=Orca123 ansible_sudo_pass=Orca123
+silvio ansbile_host=10.9.0.23 ansible_port=39 ansible_user=silvio ansible_password=Orca123 ansible_sudo_pass=Orca123
+thenamaris-seaviolet-new ansbile_host=10.9.0.98 ansible_port=39 ansible_user=thenamaris-seaviolet-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+tina-pyne-new ansbile_host=10.9.0.119 ansible_port=39 ansible_user=tina-pyne-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-athena ansbile_host=10.9.0.109 ansible_port=39 ansible_user=tms-athena ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-cobia ansbile_host=10.9.0.107 ansible_port=39 ansible_user=tms-cobia ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-gas-amberjack ansbile_host=10.9.0.73 ansible_port=39 ansible_user=tms-gas-amberjack ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-gas-bonito ansbile_host=10.9.0.83 ansible_port=39 ansible_user=tms-gas-bonito ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-gas-la-seine ansbile_host=10.9.0.85 ansible_port=39 ansible_user=tms-gas-la-seine ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-gas-vivit-americas ansbile_host=10.9.0.84 ansible_port=39 ansible_user=tms-gas-vivit-americas ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-manhattan ansbile_host=10.9.0.129 ansible_port=39 ansible_user=tms-manhattan ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-matala ansbile_host=10.9.0.141 ansible_port=39 ansible_user=orca-z106 ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-nolde ansbile_host=10.9.0.138 ansible_port=39 ansible_user=orca-z101 ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-petalidi ansbile_host=10.9.0.139 ansible_port=39 ansible_user=orca-z103 ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-rivera ansbile_host=10.9.0.101 ansible_port=39 ansible_user=tms-tankers-rivera ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-ryman ansbile_host=10.9.0.137 ansible_port=39 ansible_user=orca-z115 ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-samsara ansbile_host=10.9.0.68 ansible_port=39 ansible_user=tms-tankers-samsara ansible_password=Orca123 ansible_sudo_pass=Orca123
+tms-tankers-tigani ansbile_host=10.9.0.67 ansible_port=39 ansible_user=tms-tankers-tigani ansible_password=Orca123 ansible_sudo_pass=Orca123
+victory-leader-new ansbile_host=10.9.0.97 ansible_port=39 ansible_user=victory-leader-new ansible_password=Orca123 ansible_sudo_pass=Orca123
+wartsila-henrika-schulte ansbile_host=10.9.0.80 ansible_port=39 ansible_user=wartsila-henrika-schulte ansible_password=9Ju92nE1 ansible_sudo_pass=9Ju92nE1
+wartsila-selandia-seaway ansbile_host=10.9.0.133 ansible_port=39 ansible_user=wartsila-selandia-seaway ansible_password=fki65GD8 ansible_sudo_pass=fki65GD8
+
