@@ -1,0 +1,14 @@
+---
+- name: Check Turbo boost
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+#task 1: check if the script is on the boat
+    - name: Check Turbo boost script
+      shell: |
+        ls -l /etc/cron.d/turbo_boost_disable.sh
+      register: Turbo_status_script
+    - debug:
+        var: Turbo_status_script.stdout

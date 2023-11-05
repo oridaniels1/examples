@@ -10,8 +10,8 @@
       shell: |
         curl -s http://localhost:5010/pvt | grep sog | cut -d':' -f11 | cut -d"," -f1
       register: Sog_status
-
-
+    - debug: msg="The sog of the ship is {{ Sog_status.stdout }}"
+    
     
 #task 5: email to the slack
     - name: Email operation results
@@ -25,3 +25,5 @@
         body: System {{ inventory_hostname }} are on {{ Sog_status.stdout }} SOG
       when: Sog_status.stdout | float <= 1.0
       delegate_to: localhost
+
+      

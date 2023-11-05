@@ -1,0 +1,93 @@
+---
+- name: recording reset
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+#task 1: to check how many videos are there in mongo
+    - name: check how many recording are there in mongo
+      shell: |
+        mongo mongodb://root:example@localhost:27017/orca-ai --authenticationDatabase admin --eval "db['ais_recorded_scenes'].find({}, {alerts_count: 1, _id: 0})" | grep alerts_count | cut -d':' -f2 | cut -d'}' -f1 | head -n1
+      register: how_many_videos_are_in_mongo_ais
+    - debug:
+        var: how_many_videos_are_in_mongo_ais.stdout_lines
+      ignore_errors: true
+
+#task 1: to check how many videos are there in mongo
+    - name: check how many recording are there in mongo
+      shell: |
+        mongo mongodb://root:example@localhost:27017/orca-ai --authenticationDatabase admin --eval "db['ais_recorded_scenes'].find({}, {alerts_count: 1, _id: 0})" | grep alerts_count | cut -d':' -f2 | cut -d'}' -f1 | tail -n1
+      register: how_many_videos_are_in_mongo_ais_second
+    - debug:
+        var: how_many_videos_are_in_mongo_ais_second.stdout_lines
+      ignore_errors: true
+
+#task 1.2: docker version
+    - name: Version
+      shell: |
+        curl http://localhost:5012/systemState | python3 -m json.tool | grep system_version | cut -d':' -f2 | cut -d '"' -f2
+      register: system_version
+        
+#task 2: check how many files in upload directory
+    - name: check how many recording are there in upload directory
+      shell: |
+       sudo ls -A /orcaai/orcaai-storage/upload/scenes | wc -l
+      register: how_many_scenes_in_upload_directory
+    - debug:
+        var: how_many_scenes_in_upload_directory.stdout_lines
+      ignore_errors: true
+
+#task 3: delete how many videos are there
+    - name: Recordings reset First
+      shell: |
+       sudo docker run -v /var/run/docker.sock:/var/run/docker.sock -v /orcaai/orcaai-storage:/orcaai/orcaai-storage --network host --privileged registry.gitlab.com/orca_ai/orcaai-ship/ship-cli:{{ system_version.stdout }}  make reset-alarm-recordings-limit
+       
+      when: how_many_scenes_in_upload_directory.stdout | int <= 150
+      when: how_many_videos_are_in_mongo_ais_second.stdout | int >= 30
+
+      ignore_errors: true
+
+#task 3: delete how many videos are there
+    - name: Recordings reset Second
+      shell: |
+       sudo docker run -v /var/run/docker.sock:/var/run/docker.sock -v /orcaai/orcaai-storage:/orcaai/orcaai-storage --network host --privileged registry.gitlab.com/orca_ai/orcaai-ship/ship-cli:{{ system_version.stdout }}  make reset-alarm-recordings-limit
+       
+      when: how_many_scenes_in_upload_directory.stdout | int <= 150
+      when: how_many_videos_are_in_mongo_ais.stdout | int >= 30
+
+      ignore_errors: true
+#task 4: shows how many videos are there
+    - name: shows how many recording are there in mongo after the clean
+      shell: |
+        mongo mongodb://root:example@localhost:27017/orca-ai --authenticationDatabase admin --eval "db['ais_recorded_scenes'].find({}, {alerts_count: 1, _id: 0})" | grep alerts_count | cut -d':' -f2 | cut -d'}' -f1
+      register: how_many_videos_after_clean
+    - debug:
+        var: how_many_videos_after_clean.stdout_lines 
+      ignore_errors: true  
+#task 5: email to the slack
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: Ansible-reset-recording-{{ inventory_hostname }}
+        body: System {{ inventory_hostname }} had a reset recording
+      when: how_many_videos_are_in_mongo_ais.stdout | int >= 30
+      when: how_many_videos_after_clean.stdout | int >= 3
+      delegate_to: localhost
+#task 5: email to the slack
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: Ansible-reset-recording-{{ inventory_hostname }}
+        body: System {{ inventory_hostname }} had a reset recording
+      when: how_many_videos_are_in_mongo_ais_second.stdout | int >= 30
+      when: how_many_videos_after_clean.stdout | int >= 3
+      delegate_to: localhost

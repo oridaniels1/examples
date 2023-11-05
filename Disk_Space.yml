@@ -1,0 +1,65 @@
+---
+- name: Check and delete Disk Usage if over 60%
+  become: true
+  hosts: ships
+  gather_facts: no
+  tasks:
+
+      
+#task 1: to check the storage
+    - name: Check The disk used precet.
+      shell: |
+        sudo df -m /orcaai/orcaai-storage | cut -d'%' -f1 | grep -oE '([0-9]{1,3}$)'
+      register: Disk_status
+
+
+#task 2: delete older files
+    - name: delete older files 
+      shell: |
+       sudo find /orcaai/orcaai-storage/upload_saved -type f -mtime +60 -delete
+       sudo find /orcaai/orcaai-storage/frames -type f -mtime +60 -delete
+       sudo find /orcaai/orcaai-storage/data -type f -mtime +60 -delete
+       sudo find /orcaai/orcaai-storage/tmp_scenes -type f -mtime +60 -delete
+       sudo find /orcaai/orcaai-storage/scenes -type f -mtime +60 -delete
+       sudo find /orcaai/orcaai-storage/old_scenes -type f -mtime +120 -delete
+       sudo find /orcaai/orcaai-storage/old_frames -type f -mtime +120 -delete
+       sudo find /orcaai/orcaai-storage/old_data -type f -mtime +120 -delete
+
+      when: Disk_status.stdout | int >= 60
+      ignore_errors: true
+
+#task 3: to check the storage
+    - name: Check The disk used precet.
+      shell: |
+        sudo df -m /orcaai/orcaai-storage | cut -d'%' -f1 | grep -oE '([0-9]{1,3}$)'
+      register: Disk_status_after
+
+#task 4: email to the slack - when cleaned
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: Ansible-Disk-clean
+        body: System {{ inventory_hostname }} had {{ Disk_status.stdout }} % of disk usage, now on {{ Disk_status_after.stdout }} %
+      when: Disk_status_after.stdout | int <= 60
+      when: Disk_status.stdout | int >= 60
+      delegate_to: localhost
+      ignore_errors: true
+
+#task 5: email to the techops - when over 70%
+    - name: Email operation results over 70%
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: techops@orca-ai.io
+        subject: Ansible-Disk-clean
+        body: System {{ inventory_hostname }} has {{ Disk_status_after.stdout }} %
+      when: Disk_status_after.stdout | int >= 70
+      delegate_to: localhost
+      ignore_errors: true
+

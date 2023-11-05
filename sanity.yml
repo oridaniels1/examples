@@ -1,0 +1,348 @@
+---
+- name: sanity
+  hosts: sanity
+  become: true
+  tasks:
+      
+
+#task 1: docker version
+    - name: Version
+      shell: |
+        curl http://localhost:5012/systemState | python3 -m json.tool | grep system_version | cut -d':' -f2 | cut -d '"' -f2
+      register: system_version
+        
+
+#task 2.1: txt files and Dir
+    - name: txt files and Dir
+      shell: |
+        sudo mkdir Sanity
+        sudo chmod -R 777 /home/{{ ansible_ssh_user }}/Sanity
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/1-Overall_Errors.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/2-Detector-service.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/2-Mask_validation.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/3-ais.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/4-Influx_data.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/5-mqtt.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/6-imu-service.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/7-gps_gyro.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/8-interface.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/9-Radar_service.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/10-UI_Health.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/11-System_State.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/12-Scene-manager.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/13-Resolution.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/16-Communication_engine.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/17-restarting_services.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/18-unhealthy_services.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/19-exited_services.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/20-nvidia_smi.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/20CPU_temperature.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+      ignore_errors: true
+
+#task 2.2: Change premissions to txt files
+    - name: Change premissions to txt files
+      shell: |
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/1-Overall_Errors.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/2-Detector-service.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/2-Mask_validation.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/3-ais.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/4-Influx_data.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/5-mqtt.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/6-imu-service.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/7-gps_gyro.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/8-interface.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/9-Radar_service.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/10-UI_Health.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/11-System_State.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/12-Scene-manager.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/13-Resolution.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/16-Communication_engine.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/17-restarting_services.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/18-unhealthy_services.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/19-exited_services.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/20-nvidia_smi.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/20-PU_temperature.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+      ignore_errors: true
+       
+#task 2.3: Overall_Errors
+    - name: Overall_Errors
+      shell: |
+        timeout 30s sudo bash -c "tail /orcaai/orcaai-storage/upload/logs/fluentd/buffer.*.log /orcaai/orcaai-storage/upload/logs/host-fluentd/buffer.*.log -f | grep ERROR > /home/{{ ansible_ssh_user }}/Sanity/1-Overall_Errors.txt"
+      timeout: 40
+      ignore_errors: true
+      register: Overall_Errors
+      
+#task 3: Mask Valadation
+    - name: restart detector-service
+      shell: |
+        sudo docker restart detector-service
+
+#task 3: Mask Valadation
+    - name: Mask Valadation
+      shell: |
+        timeout 30s sudo bash -c "tail /orcaai/orcaai-storage/upload/logs/fluentd/buffer.*.log /orcaai/orcaai-storage/upload/logs/host-fluentd/buffer.*.log -f | grep detector-service > /home/{{ ansible_ssh_user }}/Sanity/2-Mask_validation.txt"
+      timeout: 40
+      ignore_errors: true
+      
+#task 4.1: Ais Service
+    - name: Ais Service 20
+      shell: |
+        curl http://localhost:5008/targets\?distance_stop\=20 | grep target_id -o | wc -l > /home/{{ ansible_ssh_user }}/Sanity/3-ais.txt 
+        
+
+#task 4.2: Ais Service
+    - name: Ais Service 10
+      shell: |
+        curl http://localhost:5008/targets\?distance_stop\=10 | grep target_id -o | wc -l >> /home/{{ ansible_ssh_user }}/Sanity/3-ais.txt
+
+        
+#task 5.1: Detector-service 
+    - name: Detector-service
+      shell: |
+        sudo docker exec influxdb influx -database 'orca_ai' -execute 'select detection_time from detector_performance_time where time > now() - 5m limit 10' -format 'json' -pretty > /home/{{ ansible_ssh_user }}/Sanity/2-Detector-service.txt
+      timeout: 40
+      ignore_errors: true      
+#task 5.2: Local influx data
+    - name: local influx data
+      shell: |
+        timeout -sHUP 30s bash -c -- "while true; do sudo docker ps | grep influxdb; sleep 1; done > /home/{{ ansible_ssh_user }}/Sanity/4-Influx_data.txt"
+      timeout: 30
+      ignore_errors: true
+      
+#task 6: MQTT
+    - name: MQTT
+      shell: |
+        curl http://localhost:5029/health_check > /home/{{ ansible_ssh_user }}/Sanity/5-mqtt.txt
+
+      ignore_errors: true
+#task 7: imu-service
+    - name: imu-service
+      shell: |
+        curl http://localhost:5007/data > /home/{{ ansible_ssh_user }}/Sanity/6-imu-service.txt
+
+      ignore_errors: true      
+#task 8: GPS & Gyro
+    - name: GPS & Gyro
+      shell: |
+        curl http://localhost:5010/pvt | python3 -m json.tool > /home/{{ ansible_ssh_user }}/Sanity/7-gps_gyro.txt
+
+      ignore_errors: true        
+#task 9: interface
+    - name: interface
+      shell: |
+        echo $(curl http://localhost:8500/v1/kv/shared/sensor_net_iface_addr | python3 -m json.tool | grep Value | awk '{print $2}' | tr -d '",') | base64 -d
+        ip a | grep 192.168.1 > /home/{{ ansible_ssh_user }}/Sanity/8-interface.txt
+      ignore_errors: true
+
+#task 10: Radar service
+    - name: Radar service
+      shell: |
+        curl http://localhost:5006/health_check > /home/{{ ansible_ssh_user }}/Sanity/9-Radar_service.txt
+      ignore_errors: true
+
+#task 11: UI Health
+    - name: UI Health
+      shell: |
+        curl http://localhost:5012/clients/main/health > /home/{{ ansible_ssh_user }}/Sanity/10-UI_Health.txt
+      ignore_errors: true
+        
+#task 13: System State
+    - name: System State
+      shell: |
+        curl http://localhost:5012/systemState | python3 -m json.tool > /home/{{ ansible_ssh_user }}/Sanity/11-System_State.txt
+      ignore_errors: true
+
+
+#task 14: ping
+    - name: ping
+      shell: |
+        ping -c 8 192.168.1.90 > /home/{{ ansible_ssh_user }}/Sanity/14-ping
+      ignore_errors: true
+      
+              
+#task 14.1: Scene-manager
+    - name: Scene-manager
+      shell: |
+        curl http://localhost:3000/health_check
+      ignore_errors: true
+      register: Scene-manager
+    - debug:
+        var: Scene-manager.stdout    
+#task 14.1: Scene-manager
+    - name: Start recording
+      shell: |
+        curl --request POST http://localhost:3000/recordings --data '{"duration": 120, "trigger": "recording_test", "videoContainer": "mp4", "fps": 15, "quality": "high", "recordScreen": true, "recordSensors": true, "cameraIds": ["day_center", "day_left", "day_right","thermal_center","thermal_right","thermal_left"]}'
+      ignore_errors: true
+
+#task 14.3: Scene-manager
+    - name: scene_name
+      shell: |
+       curl http://localhost:3000/health_check -sb -H | python3 -m json.tool | grep current_recording | awk '{print $2}' | tr -d '"' | grep recording
+      ignore_errors: true
+      register: scene_name
+    - debug:
+        var: scene_name.stdout 
+
+#task 14.4: Scene-manager
+    - name: check scene_name
+      shell: |
+        cat /orcaai/orcaai-storage/tmp_scenes/{{ scene_name.stdout }}/rec_metadata.json > /home/{{ ansible_ssh_user }}/Sanity/12-Scene-manager.txt
+      ignore_errors: true
+      
+      
+#task 15: Resolution
+    - name: Resolution
+      shell: |
+        export DISPLAY=:0
+        xrandr > /home/{{ ansible_ssh_user }}/Sanity/13-Resolution.txt
+      ignore_errors: true
+        
+#task 16: ffprobe
+    - name: ffprobe
+      shell: | 
+       ffprobe /dev/video0 2> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video1 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video2 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video3 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video4 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video5 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video6 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+       ffprobe /dev/video7 2>> /home/{{ ansible_ssh_user }}/Sanity/15-ffprobe.txt
+      ignore_errors: true
+      
+#task 17: Communication-engine
+    - name: Communication_engine
+      shell: |
+       curl http://localhost:5019/health_check | python3 -m json.tool > /home/{{ ansible_ssh_user }}/Sanity/16-Communication_engine.txt
+
+      ignore_errors: true
+      
+#task 18: directories-protection
+    - name: directories-protection
+      shell: |
+       sudo chmod 600 -R /orcaai/orcaai-storage/config/
+       sudo chmod 600 -R /orcaai/orcaai-storage/upload/
+
+#task 19: restarting-services
+    - name: restarting_services
+      shell: |
+       sudo docker ps -f status=restarting > /home/{{ ansible_ssh_user }}/Sanity/17-restarting_services.txt
+
+
+#task 20: unhealthy-services ( need Dor or Matan )
+    - name: unhealthy_services
+      shell: |
+       sudo docker ps -f status=exited | grep -vvv 'make\|ship-cli' > /home/{{ ansible_ssh_user }}/Sanity/19-exited_services.txt
+
+
+#task 21: exited-services
+    - name: exited_services-services
+      shell: |
+       sudo docker ps -f health=unhealthy > /home/{{ ansible_ssh_user }}/Sanity/18-unhealthy_services.txt
+
+        
+#task 22: PU temperature
+    - name: PU_temperature
+      shell: |
+       sensors > /home/{{ ansible_ssh_user }}/Sanity/20-PU_temperature.txt
+
+        
+#task 23: nvidia_smi
+    - name: nvidia_smi
+      shell: |
+       nvidia-smi > /home/{{ ansible_ssh_user }}/Sanity/20-nvidia_smi.txt
+
+        
+#task 24: CPU Usage
+    - name: CPU_Usage
+      shell: |
+       mpstat -P ALL > /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+ 
+      ignore_errors: true
+      
+#task 24: CPU Usage
+    - name: CPU_Usage
+      shell: |
+       sudo free -h > /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+
+      ignore_errors: true
+      
+#task 24: network speed
+    - name: network_speed(enp3s0)
+      shell: |
+       sudo ethtool enp3s0 | grep Speed > /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
+
+      ignore_errors: true
+        
+#task 24: network speed
+    - name: network_speed2(enp4s0)
+      shell: |
+       sudo ethtool enp4s0 | grep Speed >> /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
+      register: network_speed2
+      ignore_errors: true
+
+#task 24: network speed
+    - name: network_speed2(enp4s0)
+      shell: |
+       sudo ethtool eno2 | grep Speed >> /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
+      register: network_speed3
+      ignore_errors: true
+
+              
+#task 24: Screenshot
+    - name: Take screenshot using import
+      shell: "DISPLAY=:0 import -window root -resize 1920x1080 /home/{{ ansible_ssh_user }}/Pictures/screenshot.png"
+      ignore_errors: true
+
+
+#task 24: use fetch to get the files
+    - name: use fetch to get the files
+      fetch:
+        src: /home/{{ ansible_ssh_user }}/Sanity/{{ item }}
+        dest: /home/orca-ghost/Documents/Sanity/{{ ansible_ssh_user }}/{{ ansible_date_time.date }}/{{ ansible_date_time.time }}/        
+        flat: yes
+      with_items:
+        - 1-Overall_Errors.txt
+        - 2-Detector-service.txt
+        - 2-Mask_validation.txt
+        - 3-ais.txt
+        - 4-Influx_data.txt
+        - 5-mqtt.txt
+        - 6-imu-service.txt
+        - 7-gps_gyro.txt
+        - 8-interface.txt
+        - 9-Radar_service.txt
+        - 10-UI_Health.txt
+        - 11-System_State.txt
+        - 12-Scene-manager.txt
+        - 13-Resolution.txt
+        - 14-ping
+        - 15-ffprobe.txt
+        - 16-Communication_engine.txt
+        - 17-restarting_services.txt
+        - 18-unhealthy_services.txt
+        - 19-exited_services.txt
+        - 20-nvidia_smi.txt
+        - 20-PU_temperature.txt
+        - 21-network_speed.txt
+        - 22-CPU_Usage.txt
+        
+        
+        
+#task 24: use fetch to get the files
+    - name: use fetch to get the files
+      fetch:
+        src: /home/{{ ansible_ssh_user }}/Pictures/screenshot.png
+        dest: /home/orca-ghost/Documents/Sanity/{{ ansible_ssh_user }}/{{ ansible_date_time.date }}/{{ ansible_date_time.time }}/
+        flat: yes
+      with_items:
+        - screenshot.jpg
+
+
+

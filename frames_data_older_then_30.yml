@@ -1,0 +1,91 @@
+---
+- name: Find ships with 30+ days of frames and data
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+
+      
+#task 1: find ships with frames older them 30 days
+    - name: find ships with frames older them 30 days
+      shell: |
+        sudo find /orcaai/orcaai-storage/upload/frames -mtime +30 | wc -l
+      register: frames_older_them_30
+    - debug:
+        var: frames_older_them_30.stdout_lines
+
+#task 2: find ships with data older them 30 days
+    - name: find ships with data older them 30 days
+      shell: |
+        sudo find /orcaai/orcaai-storage/upload/data -mtime +30 | wc -l
+      register: data_older_them_30
+    - debug:
+        var: data_older_them_30.stdout_lines
+        
+#task 3: find oldest frame
+    - name: find oldest frame
+      shell: |
+         sudo find /orcaai/orcaai-storage/upload/frames -type f -printf '%T+ %p\n' | sort | head -n 1
+      register: Oldest_frame
+    - debug:
+        var: Oldest_frame.stdout_lines
+
+      when: frames_older_them_30.stdout | int >=1
+
+#task 4: find oldest data
+    - name: find oldest data
+      shell: |
+         sudo find /orcaai/orcaai-storage/upload/data -type f -printf '%T+ %p\n' | sort | head -n 1
+      register: Oldest_data
+    - debug:
+        var: Oldest_data.stdout_lines
+
+      when: data_older_them_30.stdout | int >=1
+      
+#task 5: create file for mooving old frames
+    - name: create file for mooving old frames
+      shell: |
+        sudo mkdir /orcaai/orcaai-storage/old_frames       
+      ignore_errors: true
+
+      when: frames_older_them_30.stdout | int >=1
+
+#task 6: create file for mooving old data
+    - name: create file for mooving old data
+      shell: |
+        sudo mkdir /orcaai/orcaai-storage/old_data
+      ignore_errors: true
+
+      when: data_older_them_30.stdout | int >=1
+      
+#task 7: move aside old frames
+    - name: move aside old frames
+      shell: |
+         sudo find /orcaai/orcaai-storage/upload/frames -maxdepth 1 -mtime +30 -type f -exec mv "{}" /orcaai/orcaai-storage/old_frames \;
+      register: complete_frames
+
+      when: frames_older_them_30.stdout | int >=1
+      
+#task 8: move aside old data
+    - name: move aside old data
+      shell: |
+         sudo find /orcaai/orcaai-storage/upload/data -maxdepth 1 -mtime +30 -type f -exec mv "{}" /orcaai/orcaai-storage/old_data \;
+      register: complete_data
+
+      when: data_older_them_30.stdout | int >=1
+      
+#task 5: email to the slack - when complete
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: Ansible-move-old-frames-data
+        body: System {{ inventory_hostname }} had {{ frames_older_them_30.stdout }} frames and {{ data_older_them_30.stdout }} data older then 30, the oldest file is {{ Oldest_frame.stdout }} frame {{ Oldest_frame.stdout }} data
+      when: frames_older_them_30.stdout | int >=1
+      when: data_older_them_30.stdout | int >=1
+      delegate_to: localhost
+      ignore_errors: true
+

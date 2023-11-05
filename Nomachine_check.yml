@@ -1,0 +1,16 @@
+---
+- name: NoMachine license 
+  hosts: NM
+  become: true
+  gather_facts: no
+  tasks:
+
+
+      
+#task 1: to check how many videos are there in mongo
+    - name: Check the exp of the NM
+      shell: |
+        sudo /etc/NX/nxserver --subscription
+      register: Nomachine_status
+    - debug:
+        var: Nomachine_status.stdout_lines

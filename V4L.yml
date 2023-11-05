@@ -1,0 +1,26 @@
+---
+- name: sanity
+  hosts: V4L
+  become: true
+  gather_facts: no
+  tasks:
+      
+
+
+#task 1: move script
+    - name: copy scipt the machine
+      copy: 
+        src: /home/orca-ghost/Desktop/upgrade-v4l2loopback.sh 
+        dest: /home/{{ ansible_ssh_user }}/Downloads
+        mode: '0777'
+        
+        
+#task 1: run script
+    - name: run scipt the machine
+      shell: |
+        cd /home/{{ ansible_ssh_user }}/Downloads
+        echo {{ ansible_password }} | sudo -S ./upgrade-v4l2loopback.sh v0.12.5 {{ ansible_password }} /home/{{ ansible_ssh_user }}/projects
+      register: Result_outpot
+    - debug:
+        var: Result_outpot.stdout
+      ignore_errors: true

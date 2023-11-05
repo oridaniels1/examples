@@ -1,0 +1,38 @@
+---
+- name: sudo-check
+  hosts: ships
+  become: False
+  tasks:
+
+#task 1: txt file and permmision
+    - name: txt file
+      become: True
+      shell: |
+        mkdir sudo_check
+        chmod -R 777 /home/{{ ansible_ssh_user }}/sudo_check
+        touch /home/{{ ansible_ssh_user }}/sudo_check/sudo_permmision.txt
+        chmod 777 /home/{{ ansible_ssh_user }}/sudo_check/sudo_permmision.txt
+
+#task 2: docker ps
+    - name: docker
+      shell: |
+        docker ps > /home/{{ ansible_ssh_user }}/sudo_check/sudo_permmision.txt
+
+#task 3: use fetch to get the file
+    - name: use fetch to get the file
+      fetch:
+        src: /home/{{ ansible_ssh_user }}/sudo_check/sudo_permmision.txt
+        dest: /home/orca-ghost/Documents/sudo_check/{{ inventory_hostname }}
+        flat: yes
+
+#task 4: email to the slack
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: sudo-permmision-check-{{ inventory_hostname }}
+        body: system {{ inventory_hostname }} have a sudo permmision issue
+      delegate_to: localhost

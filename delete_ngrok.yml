@@ -1,0 +1,17 @@
+---
+- name: delete ngrok form PU
+  hosts: ngrok
+  become: true
+  gather_facts: no
+  tasks:
+
+#task 1: delete ngrok form PU
+    - name: delete ngrok form PU
+      shell: |
+        sudo systemctl stop ngrok.service
+        sudo systemctl disable ngrok.service
+        sudo rm /lib/systemd/system/ngrok.service
+        sudo rm -rf /opt/ngrok
+      register: Sog_status
+
+    

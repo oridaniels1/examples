@@ -1,0 +1,44 @@
+---
+- name: Check time status
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+  
+  #task 1: to check the Universal time
+    - name: Check time status.
+      shell: |
+        timedatectl | grep Universal | cut -c43-47
+        
+      register: Universal_Time
+    - debug: msg="The local time is {{ Universal_Time.stdout }}"
+    
+  #task 2: to check the RTC time
+    - name: Check time status.
+      shell: |
+        timedatectl | grep RTC | cut -c43-47
+        
+      register: RTC_Time
+    - debug: msg="The local time is {{ RTC_Time.stdout }}"
+
+    - set_fact:
+        registered_integer1: "{{ RTC_Time.stdout | replace(':', '') | int }}"
+        registered_integer2: "{{ Universal_Time.stdout | replace(':', '') | int }}"
+
+    - debug:
+        msg: "Universal time is {{ registered_integer2 }} and RTC time is {{ registered_integer1 }}"
+        
+        
+    - name: Email operation results
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: techops@orca-ai.io
+        password: kianjnebnygzopob
+        to: ansible-draft-aaaahachuioeorzkha5frffoha@orcaai.slack.com
+        subject: Ansible-time-check
+        body: System {{ inventory_hostname }} time is {{ Universal_Time.stdout }}, UTC time is {{ RTC_Time.stdout }} 
+      when: "registered_integer1 | int - registered_integer2 | int > 20"
+      delegate_to: localhost
+      ignore_errors: true
+

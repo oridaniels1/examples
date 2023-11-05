@@ -1,0 +1,45 @@
+---
+- name: apt baseline versions
+  hosts: ships
+  become: true
+  gather_facts: no
+  tasks:
+    - name: Remove bad apt file
+      file:
+        path: /etc/apt/sources.list.d/nvidia-container-runtime.list
+        state: absent
+
+    - name: Add google apt-key for google
+      apt_key: 
+        url: https://dl-ssl.google.com/linux/linux_signing_key.pub
+        state: present
+
+    - name: Ansible apt install apt-show-versions
+      apt:
+        name: apt-show-versions
+        state: present
+
+    - name: run apt-show-versions
+      shell: apt-show-versions > /tmp/apt-versions.txt
+
+    - name: Fetch apt-versions.txt
+      fetch:
+        src: /tmp/apt-versions.txt 
+        dest: /home/orca-ghost/versions/{{ inventory_hostname }}
+        flat: yes
+
+
+
+
+#task 5: email to the slack
+#    - name: Email operation results
+#      mail:
+#        host: smtp.gmail.com
+#        port: 587
+#        username: ori@orca-ai.io
+#        password: fxlxrjbynvdysbhi
+#        to: ben.shtark@orca-ai.io
+#        subject: Version
+#        body: System {{ inventory_hostname }} Version
+#      when: Sog_status.stdout | float <= 1.0
+#      delegate_to: localhost
