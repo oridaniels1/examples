@@ -1,0 +1,115 @@
+---
+- name: nmea_check
+  hosts: sanity
+  become: true
+  tasks:
+      
+
+#task 1: docker version
+    - name: Version
+      shell: |
+        sudo docker ps | awk '$NF == "system-manager" {split($2, a, ":"); print a[2]}'
+      register: system_version
+      
+#task 2.1: txt files and Dir
+    - name: txt files and Dir
+      shell: |
+        sudo mkdir Sanity
+        sudo chmod -R 777 /home/{{ ansible_ssh_user }}/Sanity
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_1.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_2.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_3.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_4.txt
+      ignore_errors: true
+        
+#task 2.2: Change premissions to txt files
+    - name: Change premissions to txt files
+      shell: |
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_1.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_2.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_3.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_4.txt
+      ignore_errors: true
+      
+#task 3.1: Moxa 250 port 1
+    - name: moxa 250 port 1
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4001 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
+
+      ignore_errors: true
+      
+#task 3.2: Moxa 250 port 2
+    - name: moxa 250 port 2
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4002 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+
+      ignore_errors: true
+      
+#task 3.3: Moxa 250 port 3
+    - name: moxa 250 port 3
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4003 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+
+      ignore_errors: true
+      
+#task 3.4: Moxa 250 port 4
+    - name: moxa 250 port 4
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4004 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+
+      ignore_errors: true
+      
+#task 4.1: Moxa 251 port 1
+    - name: moxa 251 port 1
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4001 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_1.txt
+
+      ignore_errors: true
+
+#task 4.2: Moxa 251 port 1
+    - name: moxa 251 port 2
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4002 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_2.txt
+
+      ignore_errors: true
+      
+#task 4.3: Moxa 251 port 3
+    - name: moxa 251 port 3
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4003 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_3.txt
+
+      ignore_errors: true
+      
+#task 4.4: Moxa 251 port 4
+    - name: moxa 251 port4
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4004 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_4.txt
+
+      ignore_errors: true
+      
+#task 5: use fetch to get the files
+    - name: use fetch to get the files
+      fetch:
+        src: /home/{{ ansible_ssh_user }}/Sanity/{{ item }}
+        dest: /home/orca-ghost/Documents/NMEA_Check/{{ ansible_ssh_user }}/{{ ansible_date_time.date }}/{{ ansible_date_time.time }}/        
+        flat: yes
+      with_items:
+        - 23-moxa_250_1.txt
+        - 23-moxa_250_2.txt
+        - 23-moxa_250_3.txt
+        - 23-moxa_250_4.txt
+        - 24-moxa_251_1.txt
+        - 24-moxa_251_2.txt
+        - 24-moxa_251_3.txt
+        - 24-moxa_251_4.txt
+        
+              
+       

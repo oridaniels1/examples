@@ -8,7 +8,7 @@
 #task 1: docker version
     - name: Version
       shell: |
-        curl http://localhost:5012/systemState | python3 -m json.tool | grep system_version | cut -d':' -f2 | cut -d '"' -f2
+        sudo docker ps | awk '$NF == "system-manager" {split($2, a, ":"); print a[2]}'
       register: system_version
         
 
@@ -40,6 +40,14 @@
         sudo touch /home/{{ ansible_ssh_user }}/Sanity/20CPU_temperature.txt
         sudo touch /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
         sudo touch /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_1.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_2.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_3.txt
+        sudo touch /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_4.txt
       ignore_errors: true
 
 #task 2.2: Change premissions to txt files
@@ -68,6 +76,14 @@
         sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/20-PU_temperature.txt
         sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
         sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/22-CPU_Usage.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_1.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_2.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_3.txt
+        sudo chmod 777 /home/{{ ansible_ssh_user }}/Sanity/24-moxa_251_4.txt
       ignore_errors: true
        
 #task 2.3: Overall_Errors
@@ -293,15 +309,71 @@
        sudo ethtool eno2 | grep Speed >> /home/{{ ansible_ssh_user }}/Sanity/21-network_speed.txt
       register: network_speed3
       ignore_errors: true
+      
+      
+#task 25.1: Moxa 250 port 1
+    - name: moxa 250 port 1
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4001 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_1.txt
 
+      ignore_errors: true
+      
+#task 25.2: Moxa 250 port 2
+    - name: moxa 250 port 2
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4002 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_2.txt
+
+      ignore_errors: true
+      
+#task 25.3: Moxa 250 port 3
+    - name: moxa 250 port 3
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4003 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_3.txt
+
+      ignore_errors: true
+      
+#task 25.4: Moxa 250 port 4
+    - name: moxa 250 port 4
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.250 -A and port 4004 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_250_4.txt
+
+      ignore_errors: true
+      
+#task 26.1: Moxa 251 port 1
+    - name: moxa 251 port 1
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4001 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_1.txt
+
+      ignore_errors: true
+
+#task 26.2: Moxa 251 port 1
+    - name: moxa 251 port 2
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4002 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_2.txt
+
+      ignore_errors: true
+      
+#task 26.3: Moxa 251 port 3
+    - name: moxa 251 port 3
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4003 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_3.txt
+
+      ignore_errors: true
+      
+#task 26.4: Moxa 251 port 4
+    - name: moxa 251 port4
+      shell: |
+       timeout 10s sudo tcpdump -i enp3s0 host 192.168.1.251 -A and port 4004 >> /home/{{ ansible_ssh_user }}/Sanity/23-moxa_251_4.txt
+
+      ignore_errors: true
               
-#task 24: Screenshot
+#task 27: Screenshot
     - name: Take screenshot using import
       shell: "DISPLAY=:0 import -window root -resize 1920x1080 /home/{{ ansible_ssh_user }}/Pictures/screenshot.png"
       ignore_errors: true
 
 
-#task 24: use fetch to get the files
+#task 28: use fetch to get the files
     - name: use fetch to get the files
       fetch:
         src: /home/{{ ansible_ssh_user }}/Sanity/{{ item }}
@@ -332,10 +404,18 @@
         - 20-PU_temperature.txt
         - 21-network_speed.txt
         - 22-CPU_Usage.txt
+        - 23-moxa_250_1.txt
+        - 23-moxa_250_2.txt
+        - 23-moxa_250_3.txt
+        - 23-moxa_250_4.txt
+        - 24-moxa_251_1.txt
+        - 24-moxa_251_2.txt
+        - 24-moxa_251_3.txt
+        - 24-moxa_251_4.txt
         
         
         
-#task 24: use fetch to get the files
+#task 29: use fetch to get the files
     - name: use fetch to get the files
       fetch:
         src: /home/{{ ansible_ssh_user }}/Pictures/screenshot.png
