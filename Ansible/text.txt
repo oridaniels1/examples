@@ -1,0 +1,17 @@
+cosco-glory,477795300,seaspan,Container Ship,seaspan-one-friendship,COSCO GLORY
+ym-winner,477314700,seaspan,Container Ship,seaspan-one-friendship,YM WINNER
+ym-wellhead,477454100,seaspan,Container Ship,seaspan-one-friendship,YM WELLHEAD
+ym-wish,477006500,seaspan,Container Ship,seaspan-one-friendship,YM WISH
+ym-window,477769600,seaspan,Container Ship,seaspan-one-friendship,YM WINDOW
+ym-wholesome,477524700,seaspan,Container Ship,seaspan-one-friendship,YM WHOLESOME
+bridge,212184000,MSC,Container Ship,msc-palak,BRIDGE
+manzanillo,255792000,MSC,Container Ship,msc-palak,MANZANILLO
+rhiannon,636017023,MSC,Container Ship,msc-palak,RHIANNON
+jewel,636019207,MSC,Container Ship,msc-palak,JEWEL
+jolly-express,255806270,MSC,RoRo/Vehicle carrier,msc-palak,JOLLY EXPRESS
+gianna-iii,371711000,MSC,Container Ship,msc-palak,GIANNA III
+sara-elena,255806499,MSC,Container Ship,msc-palak,SARA ELENA
+sena,636017582,MSC,Container Ship,msc-palak,SENA
+beijing,255806376,MSC,Container Ship,msc-palak,BEIJING
+mayar,255806427,MSC,RoRo/Vehicle carrier,msc-palak,MAYAR
+matilde-v,353719000,MSC,Container Ship,msc-palak,MATILDE V

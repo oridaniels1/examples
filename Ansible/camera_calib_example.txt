@@ -1,0 +1,82 @@
+{
+    "shared": {
+        "cameras": {
+            "day_center": {
+                "resolution": [1920, 1080],
+                "fov":              [-24.28,         25.46           ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 570],       [1920, 570]     ],
+                "static_horizon_func": [[0, 570],       [1920, 570]     ],
+                "vertical_fov": 27.5625
+            },
+            "day_left": {
+                "resolution": [1920, 1080],
+                "fov":              [-70.30,         -21.42          ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 665],       [1920, 709]     ],
+                "static_horizon_func":[[0, 665],       [1920, 709]     ],
+                "vertical_fov": 27.5625
+            },
+            "day_right": {
+                "resolution": [1920, 1080],
+                "fov":              [17.95,          68.78          ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 610],       [1920, 550]     ],
+                "static_horizon_func": [[0, 610],       [1920, 550]     ],
+                "vertical_fov": 27.5625
+            },
+            "thermal_center": {
+                "resolution": [1280, 720],
+                "fov":              [-14.39,          16.74         ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 470],       [1280, 460]     ],
+                "static_horizon_func":  [[0, 470],       [1280, 460]     ],
+                "vertical_fov": 19.8
+            },
+            "thermal_left": {
+                "resolution": [1280, 720],
+                "fov":              [-43.05,         -12.25          ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 480],       [1280, 470]     ],
+                "static_horizon_func":[[0, 480],       [1280, 470]     ],
+                "vertical_fov": 19.8
+            },
+            "thermal_right": {
+                "resolution": [1280, 720],
+                "fov":              [11.16,          42.3626766          ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 400],       [1280, 400]     ],
+                "static_horizon_func": [[0, 400],       [1280, 400]     ],
+                "vertical_fov": 19.8
+            },
+            "day_left_2nd": {
+                "resolution": [1920, 1080],
+                "fov":              [-115,          -63.90          ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 564],       [1920, 615]     ],
+                "static_horizon_func": [[0, 564],       [1920, 615]     ],
+                "vertical_fov": 27.5625
+            },
+            "day_right_2nd": {
+                "resolution": [1920, 1080],
+                "fov":              [63.27,          115            ],
+                "pitch_offset": 0.0,
+                "roll_offset": 0.0,
+                "static_hld":       [[0, 630],       [1920, 552]     ],
+                "static_horizon_func": [[0, 630],       [1920, 552]     ],
+                "vertical_fov": 27.5625
+            }
+            
+        },
+        "imu_configs": {
+            "cameras_height": 50
+        }
+    }
+}
